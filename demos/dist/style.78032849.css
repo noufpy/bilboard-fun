@@ -4,6 +4,12 @@
     src: url('Taub_Kerning.ab055d51.ttf') format('truetype');
 }
 
+/* axes: 1. wght - range = 2-500, 2. wdth - range = 0-100 and Taub_Diamond is the same*/
+@font-face {
+    font-family: 'Taub_Square';
+    src: url('Taub_Square.944627be.ttf') format('truetype');
+}
+
 html, body 	{ margin:0;padding: 0}
 
 h3,
@@ -28,17 +34,38 @@ p {
   width: 513px
 }
 
+.font1 {
+  font-family: 'Taub_Kerning';
+  color: #EFDFD1;
+  font-size: 90px;
+  font-variation-settings: 'wght' 0;
+}
+
+.font2 {
+  font-family: 'Taub_Square';
+  color: #EFDFD1;
+  font-size: 90px;
+  /* margin-top: 255px; */
+  font-variation-settings: 'wght' 100, 'wdth' 100;
+}
+
 #textDiv {
   position: absolute;
   left:167px;
   top:100px;
-  width:1605px;
+  width:1135px;
   height:794px;
   /* background-color: grey; */
   text-align: center;
+  line-height: 70px;
+  margin-left: 180px;
+  padding-top: 130px;
+  /* text-align: center;
   vertical-align: middle;
-  line-height: 794px;
+  line-height: 794px; */
   z-index:0;
+
+  margin-left: 180px;
 }
 
 #myCanvas {

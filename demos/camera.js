@@ -24,26 +24,18 @@ const videoWidth = 1200;
 const videoHeight = 800;
 const stats = new Stats();
 var img;
-var textArray = ("Always designing for people").split('');
-var posX = 0;
-var posY = 0;
+var textArray = ("Always designing for people. Always designing for people Always designing for people Always designing for people Always designing for people Always designing for people Always designing for people").split('');
+var ww;
 
 let div = $("#myCanvas");
 for (var i = 0; i < textArray.length; i++) {
-  let ww = document.createElement('span');
+  ww = document.createElement('span');
   ww.textContent = textArray[i];
   let id = 'txt' + i;
   ww.setAttribute('id', id);
-  ww.style.fontFamily = "Taub_Kerning";
-  ww.style.fontSize = "130px";
-  // ww.style.backgroundColor = "red";
-  // ww.style.borderStyle = "solid";
-  ww.style.color = '#EFDFD1';
-  ww.style.fontVariationSettings = " 'wght' " + 0;
+  ww.setAttribute('class', 'font1');
   $("#textDiv").append(ww);
 }
-
-
 
 function isAndroid() {
   return /Android/i.test(navigator.userAgent);
@@ -217,6 +209,9 @@ function setupFPS() {
  * Feeds an image to posenet to estimate poses - this is where the magic
  * happens. This function loops with a requestAnimationFrame method.
  */
+var boop = true;
+var font = 1;
+
 function detectPoseInRealTime(video, net) {
   //const canvas = document.getElementById('output');
   //const ctx = canvas.getContext('2d');
@@ -307,6 +302,17 @@ function detectPoseInRealTime(video, net) {
     });
 
     var ptList = {};
+    var distances = {};
+    var xCorner, yCorner, w, h;
+    var letterDiv;
+    var bodyParts = poses[0].keypoints;
+    var leftElbow = bodyParts[7];
+    var rightElbow = bodyParts[8];
+    var leftWrist = bodyParts[9];
+    var nose = bodyParts[0];
+    var middleBody;
+    var shuffle, c;
+
     // distance formula
     function diff (num1, num2) {
       if (num1 > num2) {
@@ -315,19 +321,41 @@ function detectPoseInRealTime(video, net) {
         return (num2 - num1);
       }
     };
-
     function dist (x1, y1, x2, y2) {
       var deltaX = diff(x1, x2);
       var deltaY = diff(y1, y2);
       var dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
       return (dist);
     };
-    var xCorner, yCorner, w, h;
-    var letterDiv;
+    // map formula
+    function map (num, in_min, in_max, out_min, out_max) {
+      return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+
+    if (leftWrist != undefined && nose != undefined) {
+      c = ww.class;
+      shuffle = dist(nose.position['x'],nose.position['y'],leftWrist.position['x'],leftWrist.position['y']);
+      // console.log(shuffle);
+
+      if (shuffle == 60 && boop == true){
+        boop = false;
+      } else if (shuffle == 60 && boop == false){
+        boop = true;
+      }
+
+      console.log(boop);
+
+      // if (c == "font1") {
+      //   console.log("switching to font2");
+      //   ww.class = "font2";
+      // } else {
+      //   console.log("switching to font1");
+      //   ww.class = "font1";
+      // }
+    }
 
     // finding center of each letter
     for(let i=0;i<textArray.length;i++) {
-      // if (i != 6 && i != 16 && i != 18 && i != 20 ) {
       letterDiv = $("#txt" + i);
       let boardDiv = $("#myCanvas");
       let c = document.getElementById("output2");
@@ -336,40 +364,8 @@ function detectPoseInRealTime(video, net) {
       yCorner = letterDiv.offset().top - boardDiv.offset().top;
       w = letterDiv.width() / 2;
       h = letterDiv.height() / 2;
-      // console.log('xCorner: '+ xCorner + ", yCorner: " + yCorner + ", width: " + w + ", height: " + h);
-      // letterDiv.css("border-style", "solid");
-      // letterDiv.css("border-width", "2px");
-
-      // Corner Point
-      // ctx2.beginPath();
-      // ctx2.arc(xCorner, yCorner, 5, 0, 2 * Math.PI);
-      // ctx2.fillStyle = '#1B204B';
-      // ctx2.fill();
-      // ctx2.lineWidth = 1;
-      // if (i != 6 && i != 16 && i != 20 ) {
-      // Center
-      // ctx2.beginPath();
-      // ctx2.arc(xCorner+w,yCorner+h, 5, 0, 2 * Math.PI);
-      // ctx2.fillStyle = '#1B204B';
-      // ctx2.fill();
-      // ctx2.lineWidth = 1;
-      // }
-
       ptList[i] = {'x':xCorner+w,'y':yCorner+h, 'index': i, 'letter': letterDiv.text()};
     }
-
-    function map (num, in_min, in_max, out_min, out_max) {
-      return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-    }
-    Array.min = function( array ){
-      return Math.min.apply( Math, array );
-    };
-
-    var distances = {};
-    var bodyParts = poses[0].keypoints;
-    var leftElbow = bodyParts[7];
-    var rightElbow = bodyParts[8];
-    var middleBody;
 
     if (leftElbow != undefined && rightElbow != undefined) {
       let x = leftElbow.position['x'] + rightElbow.position['x'];
@@ -395,26 +391,42 @@ function detectPoseInRealTime(video, net) {
       distances[l] = {'index':letter.index,'dist':distance, 'letter': text};
     }
 
-    //console.log(distances);
+    if (font == 1) {
+      // attractor point
+      for (let n=0;n<textArray.length;n++){
+        let letterDiv = document.getElementById("txt" + n);
+        let text = distances[n].letter;
+        var impact = 781.0249;
+        let hi = map(distances[n].dist,0,impact/2,500,-100);
+        if (hi > 150){
+          hi = 150;
+        }
 
-    // get the smallest distance from that bodypart to a letter
-    //distances = Object.keys(distances).sort(function(a,b){return distances[a]-distances[b]});
-
-    for (let n=0;n<textArray.length;n++){
-      let letterDiv = document.getElementById("txt" + n);
-      let text = distances[n].letter;
-      // var max_c = Math.sqrt(Math.pow(669,2) + Math.pow(333,2));
-      var impact = 781.0249;
-      let hi = map(distances[n].dist,0,impact/4,200,0);
-      if (hi > 150){
-        hi = 150;
+        if (hi < 0){
+          hi = 0;
+        }
+        //console.log(hi);
+        letterDiv.style.fontVariationSettings = " 'wght' " + hi;
       }
+    }
 
-      if (hi < 0){
-        hi = 0;
+    if (font == 2) {
+      // attractor point
+      for (let n=0;n<textArray.length;n++){
+        let letterDiv = document.getElementById("txt" + n);
+        let text = distances[n].letter;
+        var impact = 781.0249;
+        let hi = map(distances[n].dist,0,impact/2,0,500);
+        // if (hi > 100){
+        //   hi = 100;
+        // }
+        //
+        // if (hi < 0){
+        //   hi = 0;
+        // }
+        //console.log(hi);
+        letterDiv.style.fontVariationSettings = " 'wght' " + hi + ", 'wdth' " + 0;
       }
-      //console.log(hi);
-      letterDiv.style.fontVariationSettings = " 'wght' " + hi;
     }
 
     // End monitoring code for frames per second
