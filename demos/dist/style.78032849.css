@@ -1,0 +1,76 @@
+/* axes: 1. wght - range = 30-190 */
+@font-face {
+    font-family: 'Taub_Kerning';
+    src: url('Taub_Kerning.ab055d51.ttf') format('truetype');
+}
+
+html, body 	{ margin:0;padding: 0}
+
+h3,
+h4,
+p {
+  margin: 10px 0;
+}
+
+#main ul {
+  margin: 10px 0;
+  padding: 0;
+}
+
+#main li {
+  list-style-type: none;
+  display: inline-block;
+  z-index: 999;
+}
+
+#results>div {
+  display: inline-block;
+  width: 513px
+}
+
+#textDiv {
+  position: absolute;
+  left:167px;
+  top:100px;
+  width:1605px;
+  height:794px;
+  /* background-color: grey; */
+  text-align: center;
+  vertical-align: middle;
+  line-height: 794px;
+  z-index:0;
+}
+
+#myCanvas {
+  background-color: #EFDFD1;
+  width: 2000px;
+  height: 1000px;
+  position:absolute;
+  left:0px;
+  top:0px;
+  /* z-index:-999; */
+}
+
+#output2 {
+  position:absolute;
+  left:0px;
+  top:0px;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  color: black;
+}
+
+.footer-text {
+  max-width: 600px;
+  text-align: center;
+  margin: auto;
+}
+
+#video{
+  display: block;
+}
